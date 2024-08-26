@@ -33,7 +33,6 @@ npm i
   - **ISSUE_LABELS**: Issueに紐づけたいラベル
   - **GH_TOKEN**: 発行した `github_***` の形式のToken
 - `body-elements.txt` には下記のような形式でテキストを入力する
-  -
 
 ```
 Issue_title1 // タイトル(大文字の英字始まりの必要あり。重複不可。)
