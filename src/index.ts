@@ -8,11 +8,12 @@ const body_elements = fs.readFileSync('./src/body-elements.txt', 'utf8')
 const suspicious_code_array = body_elements.split('\n')
 const issue_tag = process.env.ISSUE_LABELS.split(',')
 const dead_code_array = {}
-let processing_key = ''
+let isTitle = true
+let processing_title = ''
 
 /**
- * - Issueのタイトルは英字の大文字想定
- * - それ以降は空行が来るまでのテキストをタイトルのKeyの配列に格納する
+ * - Issueのタイトルはテキストファイルの１行目&空行の後の行の想定
+ * - タイトル以降は空行が来るまでのテキストをタイトルのKeyの配列に格納する
  *
  * 【入力される値】
  * Issue_title1
@@ -38,16 +39,20 @@ let processing_key = ''
  * }
  */
 while (suspicious_code_array.length) {
-    const key = suspicious_code_array[0]
+    const line = suspicious_code_array[0]
 
-    if (/^[A-Z]/.test(key)) {
-        processing_key = key
-        Object.assign(dead_code_array, {[key]: []})
+    if (!isTitle && line !== '') dead_code_array[processing_title].push(line)
+
+    if (isTitle) {
+        processing_title = line
+        Object.assign(dead_code_array, {[line]: []})
+        isTitle = false
     }
 
-    if (!(/^[A-Z]/.test(key)) && key !== '') dead_code_array[processing_key].push(key)
-    if (key === '') processing_key = ''
-
+    if (!isTitle && line === '') {
+        processing_title = ''
+        isTitle = true
+    }
     suspicious_code_array.shift()
 }
 
